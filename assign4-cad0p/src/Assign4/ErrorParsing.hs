@@ -27,7 +27,7 @@ type ParserF a = String -> Either ErrorMsg (a, String)
   This parser type does not allow backtracking and is less expressive than the list-based parsers.
 -}
 newtype Parser a
-  = Parser (ParserF a)
+  = Parser { parse :: ParserF a }
 
 
 instance Show ErrorMsg where
@@ -40,4 +40,11 @@ instance Eq ErrorMsg where
 instance Functor Parser where
   fmap f (Parser p) = Parser ((first f <$>) . p)
 
+
+instance Applicative Parser where
+  pure a = Parser (\x -> Right (a, x))
+  (Parser f) <*> p' = Parser (\x -> case f x of
+    Left err       -> Left err
+    -- pd parsed, tp to parse
+    Right (pd, tp) -> parse (pd <$> p') tp)
 

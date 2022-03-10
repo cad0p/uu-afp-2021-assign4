@@ -12,17 +12,17 @@ import           Data.Char             (digitToInt, isDigit)
 
 
 qcErrPar :: TestTree
-qcErrPar = testGroup "ErrPar" [ qcFunParser ]
+qcErrPar = testGroup "Error Parsing"  [ qcFunParser ]
 
 huErrPar :: TestTree
-huErrPar = testGroup "ErrPar" [ huIntParser
-                              , huFunParser ]
+huErrPar = testGroup "Error Parsing"  [ huIntParser
+                                      , huFunParser ]
 
 
 huIntParser :: TestTree
 huIntParser = testGroup "instance Parser Int"
   [ testCase "intSumParser: 101" (
-      runParser intSumParser "101"
+      parse intSumParser "101"
     @?=
       Right (2, "")
   )]
@@ -31,12 +31,12 @@ huIntParser = testGroup "instance Parser Int"
 huFunParser :: TestTree
 huFunParser = testGroup "instance Functor Parser"
   [ testCase "fmap intSumParser: 101 (+ 1)" (
-      runParser (fmap (+ 1) intSumParser) "101"
+      parse (fmap (+ 1) intSumParser) "101"
     @?=
       Right (3, "")
   )
   , testCase "fmap intSumParser: 101 (* 3)" (
-      runParser (fmap (* 3) intSumParser) "101"
+      parse (fmap (* 3) intSumParser) "101"
     @?=
       Right (6, "")
   )
@@ -54,18 +54,18 @@ qcFunParser = testGroup "instance Functor Parser"
 -}
 prop_FunParserFmapIntSum :: Fun Int Int -> String -> Bool
 prop_FunParserFmapIntSum f "" =
-    runParser (applyFun f <$> intSumParser) ""
+    parse (applyFun f <$> intSumParser) ""
   ==
     Left (ErrorMsg "the string is empty")
 prop_FunParserFmapIntSum f s
   | all isDigit s =
-      runParser (applyFun f <$> intSumParser) s
+      parse (applyFun f <$> intSumParser) s
     ==
       do
-        (i, x) <- runParser intSumParser s
+        (i, x) <- parse intSumParser s
         Right (applyFun f i, x)
   | otherwise =
-      runParser (applyFun f <$> intSumParser) s
+      parse (applyFun f <$> intSumParser) s
     ==
       Left (ErrorMsg "the char is not an Int")
 
@@ -85,9 +85,6 @@ intSumParserF s = intSumParser' (0, s) where
 
 intSumParser :: Parser Int
 intSumParser = Parser intSumParserF
-
-runParser :: Parser a -> ParserF a
-runParser (Parser p) = p
 
 
 
