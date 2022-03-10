@@ -8,6 +8,8 @@ import           Test.Tasty.QuickCheck as QC
 import           Assign4.ErrorParsing
 
 import           Data.Char             (digitToInt, isDigit)
+import           GHC.Base              (Alternative (..))
+
 
 
 
@@ -19,7 +21,8 @@ huErrPar :: TestTree
 huErrPar = testGroup "Error Parsing"  [ huIntParser
                                       , huFunParser
                                       , huAppParser
-                                      , huMndParser ]
+                                      , huMndParser
+                                      , huAltParser ]
 
 
 huIntParser :: TestTree
@@ -62,6 +65,19 @@ huMndParser = testGroup "instance Monad Parser"
   )
   ]
 
+huAltParser :: TestTree
+huAltParser = testGroup "instance Alternative Parser"
+  [ testCase "empty" (
+      parse (empty :: Parser Int) "xyz"
+    @?=
+      Left (ErrorMsg "empty")
+  )
+  , testCase "Left" (
+      parse (Parser (\_ -> Left (ErrorMsg "empty")) <|> intSumParser) "23"
+    @?=
+      Right (5, "")
+  )]
+
 qcFunParser :: TestTree
 qcFunParser = testGroup "instance Functor Parser"
   [ QC.testProperty "fmap intSumParser" prop_FunParserFmapIntSum ]
@@ -100,6 +116,11 @@ prop_AppParserPure a s =
     parse (pure a) s
   ==
     Right (a, s)
+
+
+-- prop_AltParserEmpty :: Int -> String -> Bool
+-- prop_AltParserEmpty a s =
+--   (empty :: Parser) == Left (ErrorMsg "empty")
 
 
 {-|

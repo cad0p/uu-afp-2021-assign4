@@ -13,6 +13,7 @@ module Assign4.ErrorParsing where
 
 import           Control.Arrow (first)
 import           Data.Char     (digitToInt, isDigit)
+import           GHC.Base      (Alternative (..))
 
 
 newtype ErrorMsg
@@ -56,3 +57,10 @@ instance Monad Parser where
       Left err       -> Left err
       Right (pd, tp) -> parse (f pd) tp
     )
+
+
+instance Alternative Parser where
+  empty = Parser (\_ -> Left (ErrorMsg "empty"))
+  (Parser p) <|> (Parser p') = Parser (\c -> case p c of
+    Left _ -> p' c
+    pc     -> pc)
