@@ -6,9 +6,9 @@ cabal-version: 1.12
 
 name:           assign4-cad0p
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/cad0p/assign4-cad0p#readme>
-homepage:       https://github.com/cad0p/assign4-cad0p#readme
-bug-reports:    https://github.com/cad0p/assign4-cad0p/issues
+description:    Please see the README on GitHub at <https://github.com/uu-afp/uu-afp-2021-assign4-cad0p#readme>
+homepage:       https://github.com/uu-afp/uu-afp-2021-assign4-cad0p#readme
+bug-reports:    https://github.com/uu-afp/uu-afp-2021-assign4-cad0p/issues
 author:         Pier Carlo Cadoppi
 maintainer:     p.c.cadoppi@students.uu.nl
 copyright:      Copyright (c) 2022 Pier Carlo Cadoppi
@@ -21,11 +21,12 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/cad0p/assign4-cad0p
+  location: https://github.com/uu-afp/uu-afp-2021-assign4-cad0p
 
 library
   exposed-modules:
-      Lib
+      Assign4.ErrorParsing
+      Assign4.GenericParsing
   other-modules:
       Paths_assign4_cad0p
   hs-source-dirs:
@@ -51,6 +52,8 @@ test-suite assign4-cad0p-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Test.ErrorParsing
+      Test.GenericParsing
       Paths_assign4_cad0p
   hs-source-dirs:
       test
