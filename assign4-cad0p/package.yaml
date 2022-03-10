@@ -50,3 +50,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - assign4-cad0p
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck

@@ -1,8 +1,17 @@
 
+{-|
+Module      : Assign4.ErrorParsing
+Description : Exercise 1 – Parsing with error messages
+Copyright   : (c) Pier Carlo Cadoppi, 2022
+License     : MIT License
+Maintainer  : p.c.cadoppi@students.uu.nl
+Stability   : experimental
+-}
 
 module Assign4.ErrorParsing where
+
+
 import           Control.Arrow (first)
-import           Data.Char     (digitToInt, isDigit)
 
 
 newtype ErrorMsg
@@ -24,26 +33,11 @@ newtype Parser a
 instance Show ErrorMsg where
   show (ErrorMsg e) = "ERROR: " ++ show e
 
+instance Eq ErrorMsg where
+  (ErrorMsg a) == (ErrorMsg b) = a == b
+
 
 instance Functor Parser where
   fmap f (Parser p) = Parser ((first f <$>) . p)
 
 
-{-|
-  >>> intSumParser "101"
-  >>  Right (2,"")
--}
-intSumParserF :: ParserF Int
-intSumParserF "" = Left (ErrorMsg "the string is empty")
-intSumParserF s = intSumParser' (0, s) where
-  intSumParser' state = case state of
-    (_, "")   -> Right state
-    (i, x:xs) -> if isDigit x
-      then intSumParser' (i + digitToInt x, xs)
-      else Left (ErrorMsg "the char is not an Int")
-
-intSumParser :: Parser Int
-intSumParser = Parser intSumParserF
-
-runParser :: Parser a -> ParserF a
-runParser (Parser p) = p
