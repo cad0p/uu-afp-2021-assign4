@@ -21,7 +21,7 @@ huErrPar = testGroup "ErrPar" [ huIntParser
 
 huIntParser :: TestTree
 huIntParser = testGroup "instance Parser Int"
-  [ testCase "101" (
+  [ testCase "intSumParser: 101" (
       runParser intSumParser "101"
     @?=
       Right (2, "")
@@ -30,12 +30,12 @@ huIntParser = testGroup "instance Parser Int"
 
 huFunParser :: TestTree
 huFunParser = testGroup "instance Functor Parser"
-  [ testCase "101 (+ 1)" (
+  [ testCase "fmap intSumParser: 101 (+ 1)" (
       runParser (fmap (+ 1) intSumParser) "101"
     @?=
       Right (3, "")
   )
-  , testCase "101 (* 3)" (
+  , testCase "fmap intSumParser: 101 (* 3)" (
       runParser (fmap (* 3) intSumParser) "101"
     @?=
       Right (6, "")
@@ -43,8 +43,25 @@ huFunParser = testGroup "instance Functor Parser"
   ]
 
 qcFunParser :: TestTree
-qcFunParser = testGroup "instance Functor Parser" []
-  -- [ QC.testProperty ""]
+qcFunParser = testGroup "instance Functor Parser"
+  [ QC.testProperty "fmap intSumParser" prop_FunParserFmapIntSum ]
+
+prop_FunParserFmapIntSum :: (Int -> Int) -> String -> Bool
+prop_FunParserFmapIntSum f "" =
+    runParser (f <$> intSumParser) ""
+  ==
+    Left (ErrorMsg "the string is empty")
+prop_FunParserFmapIntSum f s
+  | all isDigit s =
+      runParser (f <$> intSumParser) s
+    ==
+      do
+        (i, x) <- runParser intSumParser s
+        Right (f i, x)
+  | otherwise =
+      runParser (f <$> intSumParser) s
+    ==
+      Left (ErrorMsg "the char is not an Int")
 
 
 {-|
