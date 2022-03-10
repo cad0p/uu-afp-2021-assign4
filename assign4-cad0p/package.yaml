@@ -1,0 +1,52 @@
+name:                assign4-cad0p
+version:             0.1.0.0
+github:              "uu-afp/uu-afp-2021-assign4-cad0p"
+license:             BSD3
+author:              "Pier Carlo Cadoppi"
+maintainer:          "p.c.cadoppi@students.uu.nl"
+copyright:           "Copyright (c) 2022 Pier Carlo Cadoppi"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/uu-afp/uu-afp-2021-assign4-cad0p#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+ghc-options:
+  - -Wall
+  - -fwarn-incomplete-uni-patterns
+
+library:
+  source-dirs: src
+
+executables:
+  assign4-cad0p-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - assign4-cad0p
+
+tests:
+  assign4-cad0p-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - assign4-cad0p
