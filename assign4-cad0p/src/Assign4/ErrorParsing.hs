@@ -48,3 +48,11 @@ instance Applicative Parser where
     -- pd parsed, tp to parse
     Right (pd, tp) -> parse (pd <$> p') tp)
 
+
+instance Monad Parser where
+  Parser p >>= f = Parser (
+    \x -> case p x of
+      Left err       -> Left err
+      Right (pd, tp) -> parse (f pd) tp
+    )
+
