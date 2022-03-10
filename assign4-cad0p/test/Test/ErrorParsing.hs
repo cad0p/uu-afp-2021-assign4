@@ -12,11 +12,13 @@ import           Data.Char             (digitToInt, isDigit)
 
 
 qcErrPar :: TestTree
-qcErrPar = testGroup "Error Parsing"  [ qcFunParser ]
+qcErrPar = testGroup "Error Parsing"  [ qcFunParser
+                                      , qcAppParser ]
 
 huErrPar :: TestTree
 huErrPar = testGroup "Error Parsing"  [ huIntParser
-                                      , huFunParser ]
+                                      , huFunParser
+                                      , huAppParser ]
 
 
 huIntParser :: TestTree
@@ -42,9 +44,22 @@ huFunParser = testGroup "instance Functor Parser"
   )
   ]
 
+huAppParser :: TestTree
+huAppParser = testGroup "instance Applicative Parser"
+  [ testCase "<*> (++1) 0" (
+      parse (Parser (\x -> Right ((++ "1"), x)) <*> pure "0") "1234"
+    @?=
+      Right ("01","1234")
+  )]
+
 qcFunParser :: TestTree
 qcFunParser = testGroup "instance Functor Parser"
   [ QC.testProperty "fmap intSumParser" prop_FunParserFmapIntSum ]
+
+qcAppParser :: TestTree
+qcAppParser = testGroup "instance Applicative Parser"
+  [ QC.testProperty "pure" prop_AppParserPure ]
+
 
 {-|
   instead of (Int -> Int), Fun Int Int
@@ -68,6 +83,13 @@ prop_FunParserFmapIntSum f s
       parse (applyFun f <$> intSumParser) s
     ==
       Left (ErrorMsg "the char is not an Int")
+
+
+prop_AppParserPure :: Int -> String -> Bool
+prop_AppParserPure a s =
+    parse (pure a) s
+  ==
+    Right (a, s)
 
 
 {-|
