@@ -18,7 +18,8 @@ qcErrPar = testGroup "Error Parsing"  [ qcFunParser
 huErrPar :: TestTree
 huErrPar = testGroup "Error Parsing"  [ huIntParser
                                       , huFunParser
-                                      , huAppParser ]
+                                      , huAppParser
+                                      , huMndParser ]
 
 
 huIntParser :: TestTree
@@ -51,6 +52,15 @@ huAppParser = testGroup "instance Applicative Parser"
     @?=
       Right ("01","1234")
   )]
+
+huMndParser :: TestTree
+huMndParser = testGroup "instance Monad Parser"
+  [ testCase "intSumParser >>= (-1, ++m)" (
+      parse (intSumParser >>= (\x -> Parser (\y -> Right (x-1, y++"m")))) "23"
+    @?=
+      Right (4,"m")
+  )
+  ]
 
 qcFunParser :: TestTree
 qcFunParser = testGroup "instance Functor Parser"
