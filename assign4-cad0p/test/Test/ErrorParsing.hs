@@ -46,20 +46,26 @@ qcFunParser :: TestTree
 qcFunParser = testGroup "instance Functor Parser"
   [ QC.testProperty "fmap intSumParser" prop_FunParserFmapIntSum ]
 
-prop_FunParserFmapIntSum :: (Int -> Int) -> String -> Bool
+{-|
+  instead of (Int -> Int), Fun Int Int
+  insteaf of f x,          applyFun f x
+
+  https://hackage.haskell.org/package/QuickCheck-2.14.2/docs/Test-QuickCheck-Function.html#t:Fun
+-}
+prop_FunParserFmapIntSum :: Fun Int Int -> String -> Bool
 prop_FunParserFmapIntSum f "" =
-    runParser (f <$> intSumParser) ""
+    runParser (applyFun f <$> intSumParser) ""
   ==
     Left (ErrorMsg "the string is empty")
 prop_FunParserFmapIntSum f s
   | all isDigit s =
-      runParser (f <$> intSumParser) s
+      runParser (applyFun f <$> intSumParser) s
     ==
       do
         (i, x) <- runParser intSumParser s
-        Right (f i, x)
+        Right (applyFun f i, x)
   | otherwise =
-      runParser (f <$> intSumParser) s
+      runParser (applyFun f <$> intSumParser) s
     ==
       Left (ErrorMsg "the char is not an Int")
 
