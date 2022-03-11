@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeOperators #-}
 module Assign4.GenericParsing where
 
-import           Assign4.ErrorParsing (Parser (parse))
+import           Assign4.ErrorParsing (ErrorMsg, Parser (parse))
 
 -- Step 1: Modelling Data Types
 
@@ -71,4 +71,11 @@ type IntTreeS = K Int :+: (I :*: I)
 -- Step 4: define the generic function by induction on the structure of the representation
 
 
--- class Parse
+class Parse f where
+  fparse :: (String -> Either ErrorMsg (a, String)) -> f a -> Either ErrorMsg (a, String)
+
+instance Parse U where
+  fparse f U = f ""
+
+-- instance Parse I where
+--   fparse f (I r) = f r
