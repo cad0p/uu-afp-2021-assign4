@@ -12,7 +12,6 @@ module Assign4.ErrorParsing where
 
 
 import           Control.Arrow (first)
-import           Data.Char     (digitToInt, isDigit)
 import           GHC.Base      (Alternative (..))
 
 

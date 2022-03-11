@@ -140,4 +140,15 @@ intSumParser :: Parser Int
 intSumParser = Parser intSumParserF
 
 
+{-|
+  A more robust parse implementation.
 
+  Taken from:
+  http://dev.stephendiehl.com/fun/002_parsers.html
+-}
+runParser :: Parser a -> String -> a
+runParser m s =
+  case parse m s of
+    Right (res, "") -> res
+    Right (_, _)    -> error "Parser did not consume entire stream."
+    Left r          -> error (show r)
