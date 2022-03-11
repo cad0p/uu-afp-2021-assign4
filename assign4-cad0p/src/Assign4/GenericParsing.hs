@@ -42,13 +42,33 @@ from (Number n) = n
 to :: Int -> Number
 to i = Number { n = i }
 
--- Step 3: define the generic function by induction on the structure of the representation
+-- Step 3: build pattern functors and combinators
 
+{-| Either a constructor or the other -}
 data (:+:) f g r
   = L (f r)
   | R (g r)
 
+{-| Merge two constructors to create a longer one -}
 data (:*:) f g r
   = f r :*: g r
+
+{-| A constructor of the same type, recursion -}
+data I r
+  = I r
+
+{-| A constant -}
+data K a r
+  = K a
+
+{-| The unit -}
+data U r = U
+
+{-| see slide 26 -}
+type IntTreeS = K Int :+: (I :*: I)
+
+
+-- Step 4: define the generic function by induction on the structure of the representation
+
 
 -- class Parse
