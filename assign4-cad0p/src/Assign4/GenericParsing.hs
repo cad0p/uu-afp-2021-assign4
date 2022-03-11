@@ -10,13 +10,22 @@ data Fix f
   = In (f (Fix f))
 
 data IntTreeF t
-  = Leaf Int
-  | Node t t
+  = LeafF Int
+  | NodeF t t
 
 type IntTree = Fix IntTreeF
 
 data Bool = True | False
 
+-- | Bonus 1: Fixity taken into account
+data IntTreeFixityF t
+  = LeafFixityF Int
+  | t :|: t
+
+type IntTreeFixity = Fix IntTreeFixityF
+
+
+-- | Bonus 2: Record labels taken into account
 data Number
   = Number
       { n :: Int
@@ -26,3 +35,5 @@ data Number
 
 
 -- Step 3: define the generic function by induction on the structure of the representation
+
+class Parse
