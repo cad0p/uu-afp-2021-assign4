@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
+{-# LANGUAGE TypeOperators #-}
 module Assign4.GenericParsing where
 
 import           Assign4.ErrorParsing (Parser (parse))
@@ -31,9 +32,23 @@ data Number
       { n :: Int
       }
 
+
+
 -- Step 2: define a functions to and from to convert values between user-defined datatypes and their representations
 
+from :: Number -> Int
+from (Number n) = n
+
+to :: Int -> Number
+to i = Number { n = i }
 
 -- Step 3: define the generic function by induction on the structure of the representation
 
-class Parse
+data (:+:) f g r
+  = L (f r)
+  | R (g r)
+
+data (:*:) f g r
+  = f r :*: g r
+
+-- class Parse
