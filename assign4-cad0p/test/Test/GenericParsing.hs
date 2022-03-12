@@ -35,15 +35,20 @@ huBoolParser = testGroup "parseBool"
 
 huStringUntilParser :: TestTree
 huStringUntilParser = testGroup "parseStringUntil"
-  [ testCase "space terminator" (
-      testCaseSpaceTerm
+  [ testCase "space terminator, remaining string" (
+      testCaseSpaceTerm "Pizza Hut"
     @?=
       Right ("Pizza", " Hut")
+  )
+  , testCase "space terminator, finished string" (
+      testCaseSpaceTerm "Pizza"
+    @?=
+      Right ("Pizza", "")
   )]
 
 
-testCaseSpaceTerm :: Parsed String
-testCaseSpaceTerm = parseStringUntil fTerm "Pizza Hut" where
+testCaseSpaceTerm :: String -> Parsed String
+testCaseSpaceTerm = parseStringUntil fTerm where
   fTerm "" = False
   fTerm (x:_) = case x of
     ' ' -> True

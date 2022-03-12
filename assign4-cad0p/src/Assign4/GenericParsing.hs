@@ -139,7 +139,10 @@ parseBool = gparse toBool
 
   The termination function could be something like
   > fTerm (x:xs) = x /= ' '
+
   (but not really because of the custom bool implementation)
+  see here:
+  https://stackoverflow.com/questions/66341296/debug-couldnt-match-expected-type-ghc-types-bool-with-actual-type-bool
 -}
 parseStringUntil :: (String -> Bool) -> ParserF String
 parseStringUntil _ "" = Left (ErrorMsg "the string is empty")
