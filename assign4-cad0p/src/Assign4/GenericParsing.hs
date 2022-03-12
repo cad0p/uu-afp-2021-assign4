@@ -134,3 +134,18 @@ instance Parse (K Bool) where
 -- | Parses a Bool (True or False)
 parseBool :: ParserF Bool
 parseBool = gparse toBool
+
+{-| Parses a String until the termination condition
+
+  The termination function could be something like
+  > fTerm (x:xs) = x /= ' '
+  (but not really because of the custom bool implementation)
+-}
+parseStringUntil :: (String -> Bool) -> ParserF String
+parseStringUntil _ "" = Left (ErrorMsg "the string is empty")
+parseStringUntil fTerm (x:xs) = parseStringUntil' (x:xs) "" where
+  parseStringUntil' :: String -> String -> Parsed String
+  parseStringUntil' "" toParse = Right (toParse, "")
+  parseStringUntil' (x':xs') toParse = case fTerm (x':xs') of
+    False -> parseStringUntil' xs' (toParse ++ [x'])
+    True  -> Right (toParse, x':xs')

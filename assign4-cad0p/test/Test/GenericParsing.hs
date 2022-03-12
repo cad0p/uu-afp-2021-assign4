@@ -14,7 +14,8 @@ qcGenPar :: TestTree
 qcGenPar = testGroup "Generic Parsing" []
 
 huGenPar :: TestTree
-huGenPar = testGroup "Generic Parsing" [ huBoolParser ]
+huGenPar = testGroup "Generic Parsing"  [ huBoolParser
+                                        , huStringUntilParser ]
 
 
 
@@ -30,3 +31,20 @@ huBoolParser = testGroup "parseBool"
     @?=
       Right (True, "")
   )]
+
+
+huStringUntilParser :: TestTree
+huStringUntilParser = testGroup "parseStringUntil"
+  [ testCase "space terminator" (
+      testCaseSpaceTerm
+    @?=
+      Right ("Pizza", " Hut")
+  )]
+
+
+testCaseSpaceTerm :: Parsed String
+testCaseSpaceTerm = parseStringUntil fTerm "Pizza Hut" where
+  fTerm "" = False
+  fTerm (x:_) = case x of
+    ' ' -> True
+    _   -> False
