@@ -2,10 +2,12 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeOperators     #-}
+{-# HLINT ignore "Use if" #-}
 module Assign4.GenericParsing where
 
 import           Assign4.ErrorParsing
     ( ErrorMsg (ErrorMsg)
+    , Parsed
     , Parser (Parser, parse)
     , ParserF
     )
@@ -22,7 +24,7 @@ data IntTreeF t
 
 type IntTree = Fix IntTreeF
 
-data Bool = True | False deriving (Show)
+data Bool = True | False deriving (Eq, Show)
 
 -- | Bonus 1: Fixity taken into account
 data IntTreeFixityF t
@@ -129,5 +131,6 @@ instance Parse (K Bool) where
 
 -- Step 5: define parsing functions
 
+-- | Parses a Bool (True or False)
 parseBool :: ParserF Bool
 parseBool = gparse toBool
