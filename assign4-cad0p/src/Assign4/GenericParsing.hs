@@ -105,6 +105,7 @@ toNumber (K i) = Number { n = i }
 
 class Parse f where
   gparse :: (String -> a) -> (f a -> a) -> String -> a
+  gparse' :: ParserF (f a)
 
 instance Parse U where
   gparse _ f U = Left (ErrorMsg "unit")
