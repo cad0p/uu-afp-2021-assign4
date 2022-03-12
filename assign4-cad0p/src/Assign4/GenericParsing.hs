@@ -1,9 +1,15 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeOperators     #-}
 module Assign4.GenericParsing where
 
-import           Assign4.ErrorParsing (ErrorMsg, Parser (parse))
+import           Assign4.ErrorParsing
+    ( ErrorMsg (ErrorMsg)
+    , Parser (parse)
+    , ParserF
+    )
+import           Prelude              hiding (Bool (..))
 
 -- Step 1: Modelling Data Types
 
@@ -34,15 +40,7 @@ data Number
 
 
 
--- Step 2: define a functions to and from to convert values between user-defined datatypes and their representations
-
-from :: Number -> Int
-from (Number n) = n
-
-to :: Int -> Number
-to i = Number { n = i }
-
--- Step 3: build pattern functors and combinators
+-- Step 2: build pattern functors and combinators
 
 {-| Either a constructor or the other -}
 data (:+:) f g r
@@ -67,15 +65,38 @@ data U r = U
 {-| see slide 26 -}
 type IntTreeS = K Int :+: (I :*: I)
 
+type BoolS = K Bool
+
+-- type IntTreeFixityS
+
+type NumberS = K Int
+
+
+-- Step 3: define a functions to and from to convert values between user-defined datatypes and their representations
+
+-- from :: Number -> Int
+-- from (Number n) = n
+
+-- to :: Int -> Number
+-- to i = Number { n = i }
+
+from :: Number -> NumberS a
+from (Number n) = K n
+
+to :: NumberS a -> Number
+to (K i) = Number { n = i }
 
 -- Step 4: define the generic function by induction on the structure of the representation
 
 
 class Parse f where
-  fparse :: (String -> Either ErrorMsg (a, String)) -> f a -> Either ErrorMsg (a, String)
+  gparse :: String -> (String -> a -> Either ErrorMsg (a, String)) -> f a -> Either ErrorMsg (a, String)
 
 instance Parse U where
-  fparse f U = f ""
+  gparse _ f U = Left (ErrorMsg "unit")
 
--- instance Parse I where
---   fparse f (I r) = f r
+instance Parse I where
+  gparse s f (I r) = f s r
+
+instance Parse (K Int) where
+  gparse s f (K a) = f s undefined
