@@ -119,7 +119,10 @@ class Parse f where
 
 instance Parse (K Bool) where
   gparse parseB toB s = parse (toB <$> gParser) s
-  gParserF bStr = Right (K True, "")
+  -- Right (K True, "")
+  gParserF "True"  = Right (K True, "")
+  gParserF "False" = Right (K False, "")
+  gParserF _       = Left (ErrorMsg "couldn't parse the Bool")
   gParser = Parser gParserF
 
 
