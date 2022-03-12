@@ -42,6 +42,7 @@ data Number
   = Number
       { n :: Int
       }
+  deriving (Show)
 
 
 
@@ -160,6 +161,10 @@ parseBool = gparse toBool
 -- | Parses an Int
 parseInt :: ParserF Int
 parseInt = gparse toInt
+
+-- | Parses a Number
+parseNumber :: ParserF Number
+parseNumber = gparse toNumber
 
 {-| Parses a String until the termination condition
 
