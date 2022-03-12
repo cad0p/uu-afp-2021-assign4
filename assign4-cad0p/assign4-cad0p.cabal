@@ -34,6 +34,7 @@ library
   ghc-options: -Wall -fwarn-incomplete-uni-patterns
   build-depends:
       base >=4.7 && <5
+    , hxt
   default-language: Haskell2010
 
 executable assign4-cad0p-exe
@@ -46,6 +47,7 @@ executable assign4-cad0p-exe
   build-depends:
       assign4-cad0p
     , base >=4.7 && <5
+    , hxt
   default-language: Haskell2010
 
 test-suite assign4-cad0p-test
@@ -61,6 +63,7 @@ test-suite assign4-cad0p-test
   build-depends:
       assign4-cad0p
     , base >=4.7 && <5
+    , hxt
     , tasty
     , tasty-hunit
     , tasty-quickcheck

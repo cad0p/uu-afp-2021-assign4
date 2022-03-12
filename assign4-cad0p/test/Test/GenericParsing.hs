@@ -15,18 +15,19 @@ qcGenPar = testGroup "Generic Parsing" []
 
 huGenPar :: TestTree
 huGenPar = testGroup "Generic Parsing"  [ huBoolParser
-                                        , huStringUntilParser ]
+                                        , huStringUntilParser
+                                        , huIntParser ]
 
 
 
 huBoolParser :: TestTree
 huBoolParser = testGroup "parseBool"
-  [ testCase "parseBool 'not a bool'" (
+  [ testCase "not a bool" (
       parseBool "not a bool"
     @?=
       Left (ErrorMsg "couldn't parse the Bool 'not a bool'")
   )
-  , testCase "parseBool 'True'" (
+  , testCase "True" (
       parseBool "True"
     @?=
       Right (True, "")
@@ -44,6 +45,25 @@ huStringUntilParser = testGroup "parseStringUntil"
       testCaseSpaceTerm "Pizza"
     @?=
       Right ("Pizza", "")
+  )]
+
+
+huIntParser :: TestTree
+huIntParser = testGroup "parseInt"
+  [ testCase "10" (
+      parseInt "10"
+    @?=
+      Right (10, "")
+  )
+  , testCase "10 fgh" (
+      parseInt "10 fgh"
+    @?=
+      Right (10, " fgh")
+  )
+  , testCase "fgh" (
+      parseInt "fgh"
+    @?=
+      Left (ErrorMsg "not an Int")
   )]
 
 

@@ -11,7 +11,10 @@ import           Assign4.ErrorParsing
     , Parser (Parser, parse)
     , ParserF
     )
-import           Prelude              hiding (Bool (..))
+import           Prelude               hiding (Bool (..))
+
+import           Data.Char             (isDigit)
+import           Text.XML.HXT.DOM.Util (decimalStringToInt)
 
 -- Step 1: Modelling Data Types
 
@@ -73,6 +76,8 @@ type BoolS = K Bool
 
 type NumberS = K Int
 
+type IntS = K Int
+
 
 -- Step 3: define a functions to and from to convert values between user-defined datatypes and their representations
 
@@ -98,6 +103,12 @@ fromNumber (Number num) = K num
 toNumber :: NumberS a -> Number
 toNumber (K i) = Number { n = i }
 
+fromInt :: Int -> IntS a
+fromInt = K
+
+toInt :: IntS a -> Int
+toInt (K i) = i
+
 
 
 
@@ -120,8 +131,19 @@ class Parse f where
 -- instance Parse I where
 --   gparse s f (I r) = f s r
 
--- instance Parse (K Int) where
---   gparse s f (K i) = f s undefined
+instance Parse (K Int) where
+  gParserF = parse
+    (fromInt . decimalStringToInt <$> Parser (parseStringUntil fTerm)) where
+
+    fTerm :: String -> Bool
+    fTerm "" = False
+    fTerm (x:_)
+      | isDigit x = False
+      | otherwise = True
+
+-- instance Parse (K String) where
+--   gParserF s = Right (K s, "")
+
 
 instance Parse (K Bool) where
   gParserF "True"  = Right (K True, "")
@@ -134,6 +156,10 @@ instance Parse (K Bool) where
 -- | Parses a Bool (True or False)
 parseBool :: ParserF Bool
 parseBool = gparse toBool
+
+-- | Parses an Int
+parseInt :: ParserF Int
+parseInt = gparse toInt
 
 {-| Parses a String until the termination condition
 
