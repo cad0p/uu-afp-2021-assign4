@@ -104,7 +104,7 @@ toNumber (K i) = Number { n = i }
 
 
 class Parse f where
-  gparse :: String -> (String -> a -> Either ErrorMsg (a, String)) -> f a -> Either ErrorMsg (a, String)
+  gparse :: (String -> Either ErrorMsg (a, String)) -> f a -> a
 
 instance Parse U where
   gparse _ f U = Left (ErrorMsg "unit")
