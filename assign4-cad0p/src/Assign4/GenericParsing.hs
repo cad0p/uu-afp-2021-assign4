@@ -107,6 +107,7 @@ class Parse f where
   gparse :: (f a -> a) -> String -> Either ErrorMsg (a, String)
   gParserF :: ParserF (f a)
   gParser :: Parser (f a)
+  gParser = Parser gParserF
 
 -- instance Parse U where
 --   gparse _ f U = Left (ErrorMsg "unit")
@@ -118,14 +119,13 @@ class Parse f where
 --   gparse s f (K i) = f s undefined
 
 instance Parse (K Bool) where
-  gparse toB s = parse (toB <$> gParser) s
+  gparse toB = parse (toB <$> gParser)
   gParserF "True"  = Right (K True, "")
   gParserF "False" = Right (K False, "")
   gParserF s       = Left (ErrorMsg ("couldn't parse the Bool '" ++ s ++ "'"))
-  gParser = Parser gParserF
 
 
 -- Step 5: define parsing functions
 
-parseBool :: String -> Either ErrorMsg (Bool, String)
+parseBool :: ParserF Bool
 parseBool = gparse toBool
