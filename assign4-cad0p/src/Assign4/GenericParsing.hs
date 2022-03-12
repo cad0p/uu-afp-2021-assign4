@@ -80,11 +80,25 @@ type NumberS = K Int
 -- to :: Int -> Number
 -- to i = Number { n = i }
 
-from :: Number -> NumberS a
-from (Number n) = K n
+-- fromIntTree :: IntTree -> IntTreeS a
+-- fromIntTree t = case t of
+--   In (LeafF Int)
 
-to :: NumberS a -> Number
-to (K i) = Number { n = i }
+fromBool :: Bool -> BoolS a
+fromBool = K
+
+toBool :: BoolS a -> Bool
+toBool (K b) = b
+
+fromNumber :: Number -> NumberS a
+fromNumber (Number n) = K n
+
+toNumber :: NumberS a -> Number
+toNumber (K i) = Number { n = i }
+
+
+
+
 
 -- Step 4: define the generic function by induction on the structure of the representation
 
@@ -99,4 +113,13 @@ instance Parse I where
   gparse s f (I r) = f s r
 
 instance Parse (K Int) where
-  gparse s f (K a) = f s undefined
+  gparse s f (K i) = f s undefined
+
+instance Parse (K Bool) where
+  gparse s f (K b) = f s undefined
+
+
+-- Step 5: define parsing functions
+
+parseBool :: String -> Bool
+parseBool = gparse parseBool . fromBool
