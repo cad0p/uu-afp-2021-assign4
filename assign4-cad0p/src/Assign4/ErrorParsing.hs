@@ -18,6 +18,7 @@ import           GHC.Base      (Alternative (..))
 newtype ErrorMsg
   = ErrorMsg String
 
+-- | String -> Either ErrorMsg (a, String)
 type ParserF a = String -> Either ErrorMsg (a, String)
 
 {-|

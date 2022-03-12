@@ -22,7 +22,7 @@ data IntTreeF t
 
 type IntTree = Fix IntTreeF
 
-data Bool = True | False
+data Bool = True | False deriving (Show)
 
 -- | Bonus 1: Fixity taken into account
 data IntTreeFixityF t
@@ -105,19 +105,19 @@ toNumber (K i) = Number { n = i }
 
 class Parse f where
   gparse :: (String -> a) -> (f a -> a) -> String -> a
-  gparse' :: ParserF (f a)
+  gparser :: ParserF (f a)
 
-instance Parse U where
-  gparse _ f U = Left (ErrorMsg "unit")
+-- instance Parse U where
+--   gparse _ f U = Left (ErrorMsg "unit")
 
-instance Parse I where
-  gparse s f (I r) = f s r
+-- instance Parse I where
+--   gparse s f (I r) = f s r
 
-instance Parse (K Int) where
-  gparse s f (K i) = f s undefined
+-- instance Parse (K Int) where
+--   gparse s f (K i) = f s undefined
 
 instance Parse (K Bool) where
-  gparse s f (K b) = f s undefined
+  gparse parseB toB s = toB (K True)
 
 
 -- Step 5: define parsing functions
