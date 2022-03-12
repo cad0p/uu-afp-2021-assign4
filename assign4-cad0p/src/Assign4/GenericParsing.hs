@@ -42,7 +42,7 @@ data Number
   = Number
       { n :: Int
       }
-  deriving (Show)
+  deriving (Eq, Show)
 
 
 

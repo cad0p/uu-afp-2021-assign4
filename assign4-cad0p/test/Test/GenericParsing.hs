@@ -16,7 +16,8 @@ qcGenPar = testGroup "Generic Parsing" []
 huGenPar :: TestTree
 huGenPar = testGroup "Generic Parsing"  [ huBoolParser
                                         , huStringUntilParser
-                                        , huIntParser ]
+                                        , huIntParser
+                                        , huNumberParser ]
 
 
 
@@ -62,6 +63,24 @@ huIntParser = testGroup "parseInt"
   )
   , testCase "fgh" (
       parseInt "fgh"
+    @?=
+      Left (ErrorMsg "nothing to parse")
+  )]
+
+huNumberParser :: TestTree
+huNumberParser = testGroup "parseNumber"
+  [ testCase "10" (
+      parseNumber "10"
+    @?=
+      Right (Number {n = 10}, "")
+  )
+  , testCase "10 fgh" (
+      parseNumber "10 fgh"
+    @?=
+      Right (Number {n = 10}, " fgh")
+  )
+  , testCase "fgh" (
+      parseNumber "fgh"
     @?=
       Left (ErrorMsg "nothing to parse")
   )]
