@@ -104,7 +104,7 @@ toNumber (K i) = Number { n = i }
 
 
 class Parse f where
-  gparse :: (String -> Either ErrorMsg (a, String)) -> f a -> a
+  gparse :: (String -> a) -> (f a -> a) -> String -> a
 
 instance Parse U where
   gparse _ f U = Left (ErrorMsg "unit")
@@ -122,4 +122,4 @@ instance Parse (K Bool) where
 -- Step 5: define parsing functions
 
 parseBool :: String -> Bool
-parseBool = gparse parseBool . fromBool
+parseBool = gparse parseBool toBool
