@@ -6,7 +6,7 @@ module Assign4.GenericParsing where
 
 import           Assign4.ErrorParsing
     ( ErrorMsg (ErrorMsg)
-    , Parser (parse)
+    , Parser (Parser, parse)
     , ParserF
     )
 import           Prelude              hiding (Bool (..))
@@ -104,8 +104,9 @@ toNumber (K i) = Number { n = i }
 
 
 class Parse f where
-  gparse :: (String -> a) -> (f a -> a) -> String -> a
-  gparser :: ParserF (f a)
+  gparse :: ParserF a -> (f a -> a) -> String -> Either ErrorMsg (a, String)
+  gParserF :: ParserF (f a)
+  gParser :: Parser (f a)
 
 -- instance Parse U where
 --   gparse _ f U = Left (ErrorMsg "unit")
@@ -117,10 +118,12 @@ class Parse f where
 --   gparse s f (K i) = f s undefined
 
 instance Parse (K Bool) where
-  gparse parseB toB s = toB (K True)
+  gparse parseB toB s = parse (toB <$> gParser) s
+  gParserF bStr = Right (K True, "")
+  gParser = Parser gParserF
 
 
 -- Step 5: define parsing functions
 
-parseBool :: String -> Bool
+parseBool :: String -> Either ErrorMsg (Bool, String)
 parseBool = gparse parseBool toBool

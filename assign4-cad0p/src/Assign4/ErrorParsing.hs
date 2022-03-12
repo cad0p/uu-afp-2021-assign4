@@ -19,7 +19,10 @@ newtype ErrorMsg
   = ErrorMsg String
 
 -- | String -> Either ErrorMsg (a, String)
-type ParserF a = String -> Either ErrorMsg (a, String)
+type ParserF a = String -> Parsed a
+
+-- | Either ErrorMsg (a, String)
+type Parsed a = Either ErrorMsg (a, String)
 
 {-|
   A parser consists of a function that reads from a 'String'
