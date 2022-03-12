@@ -91,7 +91,7 @@ toBool :: BoolS a -> Bool
 toBool (K b) = b
 
 fromNumber :: Number -> NumberS a
-fromNumber (Number n) = K n
+fromNumber (Number num) = K num
 
 toNumber :: NumberS a -> Number
 toNumber (K i) = Number { n = i }
@@ -104,7 +104,7 @@ toNumber (K i) = Number { n = i }
 
 
 class Parse f where
-  gparse :: ParserF a -> (f a -> a) -> String -> Either ErrorMsg (a, String)
+  gparse :: (f a -> a) -> String -> Either ErrorMsg (a, String)
   gParserF :: ParserF (f a)
   gParser :: Parser (f a)
 
@@ -118,15 +118,14 @@ class Parse f where
 --   gparse s f (K i) = f s undefined
 
 instance Parse (K Bool) where
-  gparse parseB toB s = parse (toB <$> gParser) s
-  -- Right (K True, "")
+  gparse toB s = parse (toB <$> gParser) s
   gParserF "True"  = Right (K True, "")
   gParserF "False" = Right (K False, "")
-  gParserF _       = Left (ErrorMsg "couldn't parse the Bool")
+  gParserF s       = Left (ErrorMsg ("couldn't parse the Bool '" ++ s ++ "'"))
   gParser = Parser gParserF
 
 
 -- Step 5: define parsing functions
 
 parseBool :: String -> Either ErrorMsg (Bool, String)
-parseBool = gparse parseBool toBool
+parseBool = gparse toBool
