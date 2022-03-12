@@ -105,7 +105,10 @@ toNumber (K i) = Number { n = i }
 
 class Parse f where
   gparse :: (f a -> a) -> String -> Either ErrorMsg (a, String)
+  gparse toType = parse (toType <$> gParser)
+
   gParserF :: ParserF (f a)
+
   gParser :: Parser (f a)
   gParser = Parser gParserF
 
@@ -119,7 +122,6 @@ class Parse f where
 --   gparse s f (K i) = f s undefined
 
 instance Parse (K Bool) where
-  gparse toB = parse (toB <$> gParser)
   gParserF "True"  = Right (K True, "")
   gParserF "False" = Right (K False, "")
   gParserF s       = Left (ErrorMsg ("couldn't parse the Bool '" ++ s ++ "'"))
