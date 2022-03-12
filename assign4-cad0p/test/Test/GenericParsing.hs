@@ -63,7 +63,7 @@ huIntParser = testGroup "parseInt"
   , testCase "fgh" (
       parseInt "fgh"
     @?=
-      Left (ErrorMsg "not an Int")
+      Left (ErrorMsg "nothing to parse")
   )]
 
 

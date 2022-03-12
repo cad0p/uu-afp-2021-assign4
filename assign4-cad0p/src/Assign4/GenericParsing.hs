@@ -174,7 +174,11 @@ parseStringUntil :: (String -> Bool) -> ParserF String
 parseStringUntil _ "" = Left (ErrorMsg "the string is empty")
 parseStringUntil fTerm (x:xs) = parseStringUntil' (x:xs) "" where
   parseStringUntil' :: String -> String -> Parsed String
-  parseStringUntil' "" toParse = Right (toParse, "")
+  -- if it terminates at the first iteration, it means that
+  -- there is nothing to parse
   parseStringUntil' (x':xs') toParse = case fTerm (x':xs') of
     False -> parseStringUntil' xs' (toParse ++ [x'])
-    True  -> Right (toParse, x':xs')
+    True  -> case toParse of
+      "" -> Left (ErrorMsg "nothing to parse")
+      _  -> Right (toParse, x':xs')
+  parseStringUntil' "" toParse = Right (toParse, "")
