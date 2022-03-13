@@ -19,11 +19,17 @@ import           Text.XML.HXT.DOM.Util (decimalStringToInt)
 -- Step 1: Modelling Data Types
 
 data Fix f
-  = In (f (Fix f))
+  = In
+      { unFix :: f (Fix f)
+      }
+
+cata :: Functor f => (f a -> a) -> Fix f -> a
+cata f (In t) = f (fmap (cata f) t)
 
 data IntTreeF t
   = LeafF Int
   | NodeF t t
+  deriving (Show)
 
 type IntTree = Fix IntTreeF
 
@@ -91,6 +97,18 @@ type IntS = K Int
 -- fromIntTree :: IntTree -> IntTreeS a
 -- fromIntTree t = case t of
 --   In (LeafF Int)
+
+-- fromIntTree :: IntTree -> IntTreeS a
+-- fromIntTree (In (LeafF i))   = L (K i)
+-- fromIntTree (In (NodeF (In (LeafF a)) (In (LeafF b))))
+--   = R (I ())
+-- fromIntTree (In (NodeF _ _))
+--   = R (I undefined :*: I undefined)
+
+-- toIntTree :: IntTreeS a -> IntTree
+-- toIntTree (L (K i))         = In (LeafF i)
+-- toIntTree (R (I a :*: I b)) = In (NodeF (toIntTree (R a)) (toIntTree (R b)))
+
 
 fromBool :: Bool -> BoolS a
 fromBool = K
