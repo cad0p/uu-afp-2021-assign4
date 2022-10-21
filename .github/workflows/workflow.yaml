@@ -7,6 +7,20 @@ on:
   push:
     branches: [ "master" ]
     tags: [ "*.*.*" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Remember to set GitHub Pages deployment using GitHub Actions in settings
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -26,10 +40,14 @@ jobs:
         apt-get: libgmp-dev 
 
     - name: 📥 Checkout repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2.3.3
 
     - name: 🧰 Setup Stack
-      uses: mstksg/setup-stack@v1
+      uses: haskell/actions/setup@v2
+      with:
+        ghc-version: '8.10.7'
+        enable-stack: true
+        stack-version: 'latest'
 
     - name: 🔑 Cache Key
       id: cache_key
@@ -64,14 +82,31 @@ jobs:
         DESTDIR=dist/coverage make report && DESTDIR=dist/coverage make badge
       env:
         PKG_NAME: ${{ steps.variables.outputs.pkg_name }}
-#       Commented the text below because I do not have access to the repository settings to enable gh-pages!
-#     - name: 📘 Publish Documentation
-#       if: matrix.os == 'ubuntu-latest' && github.event_name == 'push'
-#       uses: peaceiris/actions-gh-pages@v3
-#       with:
-#         github_token: ${{ secrets.GITHUB_TOKEN }}
-#         publish_dir: dist
-#         enable_jekyll: true
+    - name: 📘 Publish Documentation - setup
+      if: matrix.os == 'ubuntu-latest' && github.event_name == 'push'
+      uses: actions/configure-pages@v2
+    - name: 📘 Publish Documentation - build
+      if: matrix.os == 'ubuntu-latest' && github.event_name == 'push'
+      uses: actions/jekyll-build-pages@v1
+      with:
+        source: ./assign4-cad0p/dist
+        destination: ./_site
+    - name: 📘 Publish Documentation - upload
+      if: matrix.os == 'ubuntu-latest' && github.event_name == 'push'
+      uses: actions/upload-pages-artifact@v1
+
+  # Deployment job
+  pages:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push'
+    steps:
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
 
   release:
     needs: [build]
